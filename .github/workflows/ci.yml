@@ -24,12 +24,11 @@ jobs:
           dotnet-version: 6.0.x
       - name: Build
         run: dotnet build LibGit2Sharp.sln --configuration Release
-      - name: Upload packages
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: NuGet packages
-          path: bin/Packages/
-          retention-days: 7
+      - name: Add GitHub feed as source
+        run: dotnet nuget add source https://nuget.pkg.github.com/9at8/index.json --name "github" --username 9at8 --password ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish NuGet package to feed
+        run: dotnet nuget push bin\Packages\*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "github" --skip-duplicate --no-symbols true
+      
   test:
     name: Test / ${{ matrix.os }} / ${{ matrix.arch }} / ${{ matrix.tfm }}
     runs-on: ${{ matrix.os }}
