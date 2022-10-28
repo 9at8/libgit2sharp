@@ -38,7 +38,7 @@ jobs:
       matrix:
         arch: [ amd64 ]
         os: [windows-2019, macos-10.15]
-        tfm: [ net472, netcoreapp3.1, net6.0 ]
+        tfm: [ net472, net6.0 ]
         exclude:
           - os: macos-10.15
             tfm: net472
@@ -65,25 +65,27 @@ jobs:
     strategy:
       matrix:
         arch: [ amd64 ]
+        distro: [ ubuntu.20.04 ]
+        sdk:  [ '6.0' ]
         # arch: [ amd64, arm64 ]
-        distro: [ alpine.3.12, alpine.3.13, alpine.3.14, centos.7, centos.8, debian.9, debian.10, debian.11, fedora.33, ubuntu.18.04, ubuntu.20.04 ]
-        sdk:  [ '6.0', '3.1' ]
-        exclude:
-          - arch: arm64
-            distro: alpine.3.12
-          - arch: arm64
-            distro: alpine.3.13
-            sdk: '3.1'
-          - arch: arm64
-            distro: alpine.3.14
-            sdk: '3.1'
-          - arch: arm64
-            distro: centos.7
-        include:
-          - sdk: '6.0'
-            tfm: net6.0
-          - sdk: '3.1'
-            tfm: netcoreapp3.1
+        # distro: [ alpine.3.12, alpine.3.13, alpine.3.14, centos.7, centos.8, debian.9, debian.10, debian.11, fedora.33, ubuntu.18.04, ubuntu.20.04 ]
+        # sdk:  [ '6.0', '3.1' ]
+        # exclude:
+        #   - arch: arm64
+        #     distro: alpine.3.12
+        #   - arch: arm64
+        #     distro: alpine.3.13
+        #     sdk: '3.1'
+        #   - arch: arm64
+        #     distro: alpine.3.14
+        #     sdk: '3.1'
+        #   - arch: arm64
+        #     distro: centos.7
+        # include:
+        #   - sdk: '6.0'
+        #     tfm: net6.0
+        #   - sdk: '3.1'
+        #     tfm: netcoreapp3.1
       fail-fast: false
     steps:
       - name: Checkout
