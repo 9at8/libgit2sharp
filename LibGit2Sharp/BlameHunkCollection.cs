@@ -70,6 +70,10 @@ namespace LibGit2Sharp
             }
         }
 
+        /// <summary>
+        /// Create a new blame using the file contents in memory
+        /// </summary>
+        /// <param name="buffer">Contents of the file</param>
         public BlameHunkCollection FromBuffer(byte[] buffer)
         {
             return new BlameHunkCollection(repo, repoHandle, this.referenceHandle, buffer);
@@ -126,6 +130,7 @@ namespace LibGit2Sharp
             }
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             if (shouldDisposeHandle)
