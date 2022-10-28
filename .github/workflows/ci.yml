@@ -25,10 +25,12 @@ jobs:
       - name: Build
         run: dotnet build LibGit2Sharp.sln --configuration Release
       - name: Add GitHub feed as source
-        run: dotnet nuget add source https://nuget.pkg.github.com/9at8/index.json --name "github" --username 9at8 --password ${{ secrets.GITHUB_TOKEN }}
+        run: dotnet nuget add source --username 9at8 --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/9at8/index.json"
+      - name: Create NuGet package
+        run: dotnet pack --configuration Release
       - name: Publish NuGet package to feed
         run: dotnet nuget push bin\Packages\*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "github" --skip-duplicate --no-symbols true
-      
+
   test:
     name: Test / ${{ matrix.os }} / ${{ matrix.arch }} / ${{ matrix.tfm }}
     runs-on: ${{ matrix.os }}
