@@ -24,12 +24,13 @@ jobs:
           dotnet-version: 6.0.x
       - name: Build
         run: dotnet build LibGit2Sharp.sln --configuration Release
-      - name: Upload packages
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: NuGet packages
-          path: bin/Packages/
-          retention-days: 7
+      - name: Add GitHub feed as source
+        run: dotnet nuget add source --username 9at8 --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/9at8/index.json"
+      - name: Create NuGet package
+        run: dotnet pack --configuration Release
+      - name: Publish NuGet package to feed
+        run: dotnet nuget push bin/Packages/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "github" --skip-duplicate --no-symbols true
+
   test:
     name: Test / ${{ matrix.os }} / ${{ matrix.arch }} / ${{ matrix.tfm }}
     runs-on: ${{ matrix.os }}
@@ -37,7 +38,7 @@ jobs:
       matrix:
         arch: [ amd64 ]
         os: [windows-2019, macos-10.15]
-        tfm: [ net472, netcoreapp3.1, net6.0 ]
+        tfm: [ net472, net6.0 ]
         exclude:
           - os: macos-10.15
             tfm: net472
@@ -64,25 +65,27 @@ jobs:
     strategy:
       matrix:
         arch: [ amd64 ]
+        distro: [ ubuntu.20.04 ]
+        sdk:  [ '6.0' ]
         # arch: [ amd64, arm64 ]
-        distro: [ alpine.3.12, alpine.3.13, alpine.3.14, centos.7, centos.8, debian.9, debian.10, debian.11, fedora.33, ubuntu.18.04, ubuntu.20.04 ]
-        sdk:  [ '6.0', '3.1' ]
-        exclude:
-          - arch: arm64
-            distro: alpine.3.12
-          - arch: arm64
-            distro: alpine.3.13
-            sdk: '3.1'
-          - arch: arm64
-            distro: alpine.3.14
-            sdk: '3.1'
-          - arch: arm64
-            distro: centos.7
-        include:
-          - sdk: '6.0'
-            tfm: net6.0
-          - sdk: '3.1'
-            tfm: netcoreapp3.1
+        # distro: [ alpine.3.12, alpine.3.13, alpine.3.14, centos.7, centos.8, debian.9, debian.10, debian.11, fedora.33, ubuntu.18.04, ubuntu.20.04 ]
+        # sdk:  [ '6.0', '3.1' ]
+        # exclude:
+        #   - arch: arm64
+        #     distro: alpine.3.12
+        #   - arch: arm64
+        #     distro: alpine.3.13
+        #     sdk: '3.1'
+        #   - arch: arm64
+        #     distro: alpine.3.14
+        #     sdk: '3.1'
+        #   - arch: arm64
+        #     distro: centos.7
+        # include:
+        #   - sdk: '6.0'
+        #     tfm: net6.0
+        #   - sdk: '3.1'
+        #     tfm: netcoreapp3.1
       fail-fast: false
     steps:
       - name: Checkout
